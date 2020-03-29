@@ -1,0 +1,5 @@
+filehash
+rq>=1.3.0
+elasticsearch>=7.0.0,<8.0.0
+connexion[swagger-ui]==2.6.0
+gunicorn>=20
