@@ -49,3 +49,11 @@
 .file-format-mobi {
     background: darkkhaki;
 }
+
+.file-format-tmp {
+    background: gray;
+}
+
+.file-format-pub {
+    background: darkolivegreen;
+}

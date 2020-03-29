@@ -5,6 +5,43 @@ function byte_to_size(bytes) {
     return Math.round(bytes / Math.pow(1024, i), 2) + ' ' + sizes[i];
 }
 
+function time_difference(timestamp) {
+
+    current = new Date().getTime();
+    previous = Date.parse(timestamp)
+
+    var msPerMinute = 60 * 1000;
+    var msPerHour = msPerMinute * 60;
+    var msPerDay = msPerHour * 24;
+    var msPerMonth = msPerDay * 30;
+    var msPerYear = msPerDay * 365;
+
+    var elapsed = current - previous;
+
+    if (elapsed < msPerMinute) {
+         return Math.round(elapsed/1000) + ' seconds ago';
+    }
+
+    else if (elapsed < msPerHour) {
+         return Math.round(elapsed/msPerMinute) + ' minutes ago';
+    }
+
+    else if (elapsed < msPerDay ) {
+         return Math.round(elapsed/msPerHour ) + ' hours ago';
+    }
+
+    else if (elapsed < msPerMonth) {
+        return 'approximately ' + Math.round(elapsed/msPerDay) + ' days ago';
+    }
+
+    else if (elapsed < msPerYear) {
+        return 'approximately ' + Math.round(elapsed/msPerMonth) + ' months ago';
+    }
+
+    else {
+        return 'approximately ' + Math.round(elapsed/msPerYear ) + ' years ago';
+    }
+}
 
 $(document).ready(function () {
     $('#search_input').focus();
@@ -26,9 +63,8 @@ $(document).ready(function () {
     </div>
     <div class="col-md-8">
       <div class="card-body">
-        <h5 class="card-title">${val._source.name}</h5>
-        <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
-        <p class="card-text"><small class="text-muted">Last updated 3 mins ago</small></p>
+        <h5 class="card-title">${val._source.path.split(`/`).pop().split('.').slice(0, -1).join('.')}</h5>
+        <p class="card-text">[<strong>${val._source.meta.language.toUpperCase()}</strong>] ${val._source.path.split(`/`).slice(1).join(`/`)} <small class="text-muted">(indexed ${time_difference(val._source.timestamp)})</small></p>
       </div>
     </div>
   </div>
