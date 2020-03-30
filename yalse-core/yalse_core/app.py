@@ -14,6 +14,7 @@ from rq import Queue
 
 DOCUMENTS_DIR = '/documents'
 DOCUMENTS_INDEX = 'test-index'
+DUPLICATES_INDEX = 'duplicates-index'
 PUNCTUATION = r"""!"#$%&'()*+,-./'’“”—:;<=>–?«»@[\]^_`©‘…{|}~"""
 
 es = Elasticsearch(['elasticsearch:9200'])
@@ -68,7 +69,7 @@ def search_documents(query):
             }
         }
     }
-    return es.search(body=body, index='test-index')
+    return es.search(body=body, index=DOCUMENTS_INDEX)
 
 
 def library_size():
@@ -81,7 +82,7 @@ def library_size():
             "library_size": {"sum": {"field": "size"}}
         }
     }
-    return es.search(body=body, index='test-index')
+    return es.search(body=body, index=DOCUMENTS_INDEX)
 
 
 def index_stats():
@@ -91,32 +92,64 @@ def index_stats():
 def document_exist(file_hash):
     body = {
         "query": {
-            "match": {
-                "hash": file_hash
+            "term": {
+                "hash": {
+                    "value": file_hash,
+                    "boost": 1.0
+                }
             }
         }
     }
-    return es.count(body=body, index='test-index')['count'] > 0
+    return es.search(body=body, index=DOCUMENTS_INDEX)['hits']['total']['value'] > 0
 
 
-def search_duplicates():
+def es_iterate_all_documents(es, index, pagesize=250, scroll_timeout="2m", **kwargs):
+    """
+    Helper to iterate ALL values from a single index
+    Yields all the documents.
+    """
+    is_first = True
+    while True:
+        # Scroll next
+        if is_first:  # Initialize scroll
+            result = es.search(index=index, scroll=scroll_timeout, **kwargs, body={
+                "size": pagesize
+            })
+            is_first = False
+        else:
+            result = es.scroll(body={
+                "scroll_id": scroll_id,
+                "scroll": scroll_timeout
+            })
+        scroll_id = result["_scroll_id"]
+        hits = result["hits"]["hits"]
+        # Stop after no more docs
+        if not hits:
+            break
+        # Yield each entry
+        yield from (hit['_source'] for hit in hits)
+
+
+def get_similar_documents(file_hash):
     body = {
         "query": {
-            "match": {
-                "name": "quantum"
+            "term": {
+                "hash": {
+                    "value": file_hash,
+                    "boost": 1.0
+                }
             }
         }
     }
-    original = es.search(body=body, index='test-index')
-    original_id = original['hits']['hits'][0]['_id']
-    original_name = original['hits']['hits'][0]['_source']['name']
-    original_content = original['hits']['hits'][0]['_source']['content']
-
+    doc = es.search(body=body, index=DOCUMENTS_INDEX)['hits']['hits'][0]
+    original_content = doc['_source']['content']
+    original_name = doc['_source']['name']
+    original_hash = doc['_source']['hash']
     body = {
         "query": {
             "match": {
                 "content": {
-                    "query": original_content[0:5000]
+                    "query": original_content[0:4000]
                 }
             }
         },
@@ -124,18 +157,64 @@ def search_duplicates():
             "_score"
         ]
     }
-
-    match = es.search(body=body, index='test-index')
+    match = es.search(body=body, index=DOCUMENTS_INDEX)
 
     score_max = match['hits']['max_score']
-    score_threshold = score_max - (score_max / 100 * 20)
-    results = {}
+    score_threshold = score_max - (score_max / 100 * 5)
+    results = {original_hash: original_name}
     for r in match['hits']['hits']:
         if r['_score'] > score_threshold:
-            results[r['_id']] = [r['_source']['name'], r['_score']]
-    return {"original": [original_id, original_name],
-            "results": results,
-            "raw": match}
+            results[r['_source']['hash']] = r['_source']['name']
+    if len(results) > 1:
+        es.index(index=DUPLICATES_INDEX, body=results)
+
+
+def search_duplicates():
+    es.indices.delete(index=DUPLICATES_INDEX, ignore=404)
+    es.indices.create(index=DUPLICATES_INDEX, ignore=400)
+
+    q = Queue(connection=Redis('redis'))
+
+    for entry in es_iterate_all_documents(es, DOCUMENTS_INDEX):
+        q.enqueue(get_similar_documents, entry['hash'])
+
+    return {'message': 'ok'}
+    # body = {
+    #     "query": {
+    #         "match": {
+    #             "name": "quantum"
+    #         }
+    #     }
+    # }
+    # original = es.search(body=body, index=DOCUMENTS_INDEX)
+    # original_id = original['hits']['hits'][0]['_id']
+    # original_name = original['hits']['hits'][0]['_source']['name']
+    # original_content = original['hits']['hits'][0]['_source']['content']
+    #
+    # body = {
+    #     "query": {
+    #         "match": {
+    #             "content": {
+    #                 "query": original_content[0:5000]
+    #             }
+    #         }
+    #     },
+    #     "sort": [
+    #         "_score"
+    #     ]
+    # }
+    #
+    # match = es.search(body=body, index=DOCUMENTS_INDEX)
+    #
+    # score_max = match['hits']['max_score']
+    # score_threshold = score_max - (score_max / 100 * 20)
+    # results = {}
+    # for r in match['hits']['hits']:
+    #     if r['_score'] > score_threshold:
+    #         results[r['_id']] = [r['_source']['name'], r['_score']]
+    # return {"original": [original_id, original_name],
+    #         "results": results,
+    #         "raw": match}
 
 
 def create_index():
@@ -154,7 +233,7 @@ def create_index():
             }
         }
     }
-    return es.indices.create(index='test-index', body=body, ignore=400)
+    return es.indices.create(index=DOCUMENTS_INDEX, body=body, ignore=400)
 
 
 def index_document(path):
@@ -172,7 +251,7 @@ def index_document(path):
             'meta': get_tika_meta(path),
             'content': get_tika_content(path)
         }
-        es.index(index="test-index", body=doc)
+        es.index(index=DOCUMENTS_INDEX, body=doc)
 
 
 def get_all_documents():
@@ -192,7 +271,7 @@ def queue_stats():
 
 
 def reset_index():
-    es.indices.delete(index='test-index', ignore=400)
+    es.indices.delete(index=DOCUMENTS_INDEX, ignore=400)
     result = create_index()
 
     return {"result": result}

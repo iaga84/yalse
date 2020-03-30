@@ -82,6 +82,13 @@ $(document).ready(function () {
             }
         });
     });
+    $('#index_duplicates').click(function () {
+        $.ajax({
+            url: "http://localhost:8000/dup",
+            success: function (data) {
+            }
+        });
+    });
     $('#delete_index').click(function () {
         $.ajax({
             url: "http://localhost:8000/reset",

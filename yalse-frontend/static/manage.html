@@ -23,7 +23,10 @@
     <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav">
             <li class="nav-item">
-                <a class="nav-link" href="/manage.html">Manage</a>
+                <a class="nav-link" href="/">Search</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link active" href="/manage.html">Manage</a>
             </li>
             <li class="nav-item">
                 <a class="nav-link" href="http://localhost:9200/test-index/_search">Elasticsearch</a>
@@ -69,6 +72,9 @@
     <!-- Button trigger modal -->
     <button type="button" class="btn btn-primary mt-4" id="index_documents">
         Index Documents
+    </button>
+    <button type="button" class="btn btn-primary mt-4" id="index_duplicates">
+        Find Duplicates
     </button>
     <button type="button" class="btn btn-danger mt-4" data-toggle="modal" data-target="#exampleModal">
         Reset Index

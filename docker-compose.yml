@@ -44,6 +44,8 @@ services:
         source: ${LIBRARY_PATH}
         target: /documents
     entrypoint: ["gunicorn", "-w", "2", "-b", "0.0.0.0:8000", "yalse_core.app"]
+    depends_on:
+      - elasticsearch
     ports:
       - 8000:8000
   yalse-worker:
