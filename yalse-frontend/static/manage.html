@@ -29,7 +29,7 @@
                 <a class="nav-link active" href="/manage.html">Manage</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="http://localhost:9200/test-index/_search">Elasticsearch</a>
+                <a class="nav-link" href="http://localhost:9200/library/_search">Elasticsearch</a>
             </li>
             <li class="nav-item">
                 <a class="nav-link" href="http://localhost:9181/">RQ</a>
@@ -47,6 +47,13 @@
                     <span class="sr-only">Loading...</span>
                 </div>
             </div>
+            <div class="shadow p-3 mb-1 mr-1 bg-white rounded">Estimated duplicates: <span id="number_of_duplicates"/>
+                <div class="spinner-grow spinner-grow-sm text-info" role="status">
+                    <span class="sr-only">Loading...</span>
+                </div>
+            </div>
+        </div>
+        <div class="row">
             <div class="shadow p-3 mb-1 mr-1 bg-white rounded">Library size: <span id="library_size"/>
                 <div class="spinner-grow spinner-grow-sm text-info" role="status">
                     <span class="sr-only">Loading...</span>
@@ -57,12 +64,19 @@
                     <span class="sr-only">Loading...</span>
                 </div>
             </div>
+        </div>
+        <div class="row">
             <div class="shadow p-3 mb-1 mr-1 bg-white rounded">Queued tasks: <span id="queued_tasks"/>
                 <div class="spinner-grow spinner-grow-sm text-info" role="status">
                     <span class="sr-only">Loading...</span>
                 </div>
             </div>
             <div class="shadow p-3 mb-1 mr-1 bg-white rounded">Failed tasks: <span id="failed_tasks"/>
+                <div class="spinner-grow spinner-grow-sm text-info" role="status">
+                    <span class="sr-only">Loading...</span>
+                </div>
+            </div>
+            <div class="shadow p-3 mb-1 mr-1 bg-white rounded">Number of workers: <span id="workers"/>
                 <div class="spinner-grow spinner-grow-sm text-info" role="status">
                     <span class="sr-only">Loading...</span>
                 </div>

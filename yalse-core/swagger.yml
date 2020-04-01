@@ -10,35 +10,43 @@ info:
 servers:
   - url: http://localhost:9393
 paths:
-  /documents:
+  /library/scan:
+    put:
+      summary: WIP
+      description: WIP
+      operationId: yalse_core.api.scan_library
+      responses:
+        202:
+          description: request accepted
+  /library/stats:
     get:
       summary: WIP
       description: WIP
-      operationId: yalse_core.app.get_all_documents
+      operationId: yalse_core.api.get_library_stats
       responses:
         200:
           description: successful operation
-  /reset:
+  /library/size:
     get:
       summary: WIP
       description: WIP
-      operationId: yalse_core.app.reset_index
+      operationId: yalse_core.api.get_library_size
       responses:
         200:
           description: successful operation
-  /dup:
-    get:
+  /library/index:
+    delete:
       summary: WIP
       description: WIP
-      operationId: yalse_core.app.search_duplicates
+      operationId: yalse_core.api.reset_library
       responses:
-        200:
-          description: successful operation
-  /search:
+        204:
+          description: index deleted
+  /documents/search:
     get:
       summary: WIP
       description: WIP
-      operationId: yalse_core.app.search_documents
+      operationId: yalse_core.api.search
       parameters:
         - in: query
           name: query
@@ -47,27 +55,27 @@ paths:
       responses:
         200:
           description: successful operation
-  /queue-stats:
+  /documents/duplicates/scan:
+    put:
+      summary: WIP
+      description: WIP
+      operationId: yalse_core.api.find_duplicates
+      responses:
+        202:
+          description: request accepted
+  /queue/stats:
     get:
       summary: WIP
       description: WIP
-      operationId: yalse_core.app.queue_stats
+      operationId: yalse_core.api.get_queue_stats
       responses:
         200:
           description: successful operation
-  /index-stats:
+  /queue/workers:
     get:
       summary: WIP
       description: WIP
-      operationId: yalse_core.app.index_stats
-      responses:
-        200:
-          description: successful operation
-  /library-size:
-    get:
-      summary: WIP
-      description: WIP
-      operationId: yalse_core.app.library_size
+      operationId: yalse_core.api.get_workers_stats
       responses:
         200:
           description: successful operation

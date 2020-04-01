@@ -19,27 +19,17 @@ function time_difference(timestamp) {
     var elapsed = current - previous;
 
     if (elapsed < msPerMinute) {
-         return Math.round(elapsed/1000) + ' seconds ago';
-    }
-
-    else if (elapsed < msPerHour) {
-         return Math.round(elapsed/msPerMinute) + ' minutes ago';
-    }
-
-    else if (elapsed < msPerDay ) {
-         return Math.round(elapsed/msPerHour ) + ' hours ago';
-    }
-
-    else if (elapsed < msPerMonth) {
-        return 'approximately ' + Math.round(elapsed/msPerDay) + ' days ago';
-    }
-
-    else if (elapsed < msPerYear) {
-        return 'approximately ' + Math.round(elapsed/msPerMonth) + ' months ago';
-    }
-
-    else {
-        return 'approximately ' + Math.round(elapsed/msPerYear ) + ' years ago';
+        return Math.round(elapsed / 1000) + ' seconds ago';
+    } else if (elapsed < msPerHour) {
+        return Math.round(elapsed / msPerMinute) + ' minutes ago';
+    } else if (elapsed < msPerDay) {
+        return Math.round(elapsed / msPerHour) + ' hours ago';
+    } else if (elapsed < msPerMonth) {
+        return 'approximately ' + Math.round(elapsed / msPerDay) + ' days ago';
+    } else if (elapsed < msPerYear) {
+        return 'approximately ' + Math.round(elapsed / msPerMonth) + ' months ago';
+    } else {
+        return 'approximately ' + Math.round(elapsed / msPerYear) + ' years ago';
     }
 }
 
@@ -51,7 +41,7 @@ $(document).ready(function () {
                 "query": this.value
             },
             dataType: "json",
-            url: "http://localhost:8000/search",
+            url: "http://localhost:8000/documents/search",
             success: function (data) {
                 $('#search_result').empty();
                 $.each(data.hits.hits, function (key, val) {
@@ -77,21 +67,24 @@ $(document).ready(function () {
     });
     $('#index_documents').click(function () {
         $.ajax({
-            url: "http://localhost:8000/documents",
+            url: "http://localhost:8000/library/scan",
+            type: 'PUT',
             success: function (data) {
             }
         });
     });
     $('#index_duplicates').click(function () {
         $.ajax({
-            url: "http://localhost:8000/dup",
+            url: "http://localhost:8000/documents/duplicates/scan",
+            type: 'PUT',
             success: function (data) {
             }
         });
     });
     $('#delete_index').click(function () {
         $.ajax({
-            url: "http://localhost:8000/reset",
+            url: "http://localhost:8000/library/index",
+            type: 'DELETE',
             success: function (data) {
             }
         });
@@ -104,10 +97,11 @@ $(document).ready(function () {
                     "query": this.value
                 },
                 dataType: "json",
-                url: "http://localhost:8000/index-stats",
+                url: "http://localhost:8000/library/stats",
                 success: function (data) {
-                    $('#number_of_documents').html(data._all.total.docs.count);
-                    $('#index_size').html(byte_to_size(data._all.total.store.size_in_bytes));
+                    $('#number_of_documents').html(data.indices.library.total.docs.count);
+                    $('#number_of_duplicates').html(Math.round(data.indices.duplicates.total.docs.count / 2));
+                    $('#index_size').html(byte_to_size(data.indices.library.total.store.size_in_bytes));
                 }
             });
             $.ajax({
@@ -115,7 +109,7 @@ $(document).ready(function () {
                     "query": this.value
                 },
                 dataType: "json",
-                url: "http://localhost:8000/library-size",
+                url: "http://localhost:8000/library/size",
                 success: function (data) {
                     $('#library_size').html(byte_to_size(data.aggregations.library_size.value));
                 }
@@ -125,7 +119,7 @@ $(document).ready(function () {
                     "query": this.value
                 },
                 dataType: "json",
-                url: "http://localhost:8000/queue-stats",
+                url: "http://localhost:8000/queue/stats",
                 success: function (data) {
                     $.each(data.queues, function (key, val) {
                         if (val.name === 'default') {
@@ -138,7 +132,16 @@ $(document).ready(function () {
 
                 }
             });
-
+            $.ajax({
+                data: {
+                    "query": this.value
+                },
+                dataType: "json",
+                url: "http://localhost:8000/queue/workers",
+                success: function (data) {
+                    $('#workers').html(data.workers.length);
+                }
+            });
         }, 2000);
     });
 });
