@@ -1,0 +1,65 @@
+version: '3.7'
+services:
+  redis:
+    image: redis:latest
+    ports:
+      - 6379:6379
+  redis-dashboard:
+    image: eoranged/rq-dashboard:latest
+    environment:
+      - RQ_DASHBOARD_REDIS_URL=redis://redis:6379
+    depends_on:
+      - redis
+    ports:
+      - 9181:9181
+  tika:
+    image: apache/tika:latest-full
+    ports:
+      - 9998:9998
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.6.1
+    environment:
+      - node.name=es01
+      - bootstrap.memory_lock=true
+      - cluster.initial_master_nodes=es01
+      - "ES_JAVA_OPTS=-Xms1g -Xmx1g"
+    ulimits:
+      nofile:
+        soft: 65535
+        hard: 65535
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - type: bind
+        source: ./index
+        target: /usr/share/elasticsearch/data
+    ports:
+      - 9200:9200
+  yalse-core:
+    build:
+      context: ./yalse-core
+    volumes:
+      - type: bind
+        source: ${LIBRARY_PATH}
+        target: /documents
+    entrypoint: ["gunicorn", "-w", "2","--timeout", "1200", "-b", "0.0.0.0:8000", "yalse_core.app"]
+    depends_on:
+      - elasticsearch
+    ports:
+      - 8000:8000
+  yalse-worker:
+    build:
+      context: ./yalse-core
+    depends_on:
+      - redis
+    volumes:
+      - type: bind
+        source: ${LIBRARY_PATH}
+        target: /documents
+    entrypoint: ["rq", "worker", "--url", "redis://redis:6379"]
+  yalse-frontend:
+    build:
+      context: ./yalse-frontend
+    ports:
+      - 8080:80

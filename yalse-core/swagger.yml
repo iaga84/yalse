@@ -1,0 +1,81 @@
+openapi: 3.0.1
+info:
+  title: YALSE Core
+  description: 'Yet Another Local Search Engine'
+  contact:
+    email: iaga84@gmail.com
+  license:
+    name: MIT License
+  version: 0.1.0
+servers:
+  - url: http://localhost:9393
+paths:
+  /library/scan:
+    put:
+      summary: WIP
+      description: WIP
+      operationId: yalse_core.api.scan_library
+      responses:
+        202:
+          description: request accepted
+  /library/stats:
+    get:
+      summary: WIP
+      description: WIP
+      operationId: yalse_core.api.get_library_stats
+      responses:
+        200:
+          description: successful operation
+  /library/size:
+    get:
+      summary: WIP
+      description: WIP
+      operationId: yalse_core.api.get_library_size
+      responses:
+        200:
+          description: successful operation
+  /library/index:
+    delete:
+      summary: WIP
+      description: WIP
+      operationId: yalse_core.api.reset_library
+      responses:
+        204:
+          description: index deleted
+  /documents/search:
+    get:
+      summary: WIP
+      description: WIP
+      operationId: yalse_core.api.search
+      parameters:
+        - in: query
+          name: query
+          schema:
+            type: string
+      responses:
+        200:
+          description: successful operation
+  /documents/duplicates/scan:
+    put:
+      summary: WIP
+      description: WIP
+      operationId: yalse_core.api.find_duplicates
+      responses:
+        202:
+          description: request accepted
+  /queue/stats:
+    get:
+      summary: WIP
+      description: WIP
+      operationId: yalse_core.api.get_queue_stats
+      responses:
+        200:
+          description: successful operation
+  /queue/workers:
+    get:
+      summary: WIP
+      description: WIP
+      operationId: yalse_core.api.get_workers_stats
+      responses:
+        200:
+          description: successful operation
