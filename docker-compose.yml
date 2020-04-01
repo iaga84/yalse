@@ -43,7 +43,7 @@ services:
       - type: bind
         source: ${LIBRARY_PATH}
         target: /documents
-    entrypoint: ["gunicorn", "-w", "2", "-b", "0.0.0.0:8000", "yalse_core.app"]
+    entrypoint: ["gunicorn", "-w", "2","--timeout", "1200", "-b", "0.0.0.0:8000", "yalse_core.app"]
     depends_on:
       - elasticsearch
     ports:
@@ -62,4 +62,4 @@ services:
     build:
       context: ./yalse-frontend
     ports:
-      -  8080:80
+      - 8080:80

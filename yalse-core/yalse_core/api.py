@@ -5,8 +5,8 @@ from redis import Redis
 from rq import Queue
 from yalse_core.common.constants import DOCUMENTS_DIR
 from yalse_core.elasticsearch.read import get_all_documents, index_stats, library_size, search_documents
-from yalse_core.elasticsearch.write import (get_similar_documents, index_document,
-                                            reset_documents_index, reset_duplicates_index, initialize_indexes)
+from yalse_core.elasticsearch.write import (get_similar_documents, index_document, initialize_indexes,
+                                            reset_documents_index, reset_duplicates_index,)
 
 
 def scan_library():
@@ -19,7 +19,7 @@ def scan_library():
             files.append(os.path.join(r, file))
 
     for f in files:
-        q.enqueue(index_document, str(f))
+        q.enqueue(index_document, str(f), job_timeout=1200)
     return {'message': "scan in progress"}
 
 

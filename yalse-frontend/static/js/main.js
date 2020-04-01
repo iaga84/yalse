@@ -45,6 +45,9 @@ $(document).ready(function () {
             success: function (data) {
                 $('#search_result').empty();
                 $.each(data.hits.hits, function (key, val) {
+                    try {lang = val._source.meta.language.toUpperCase()} catch (e) {
+                        lang = 'N/A'
+                    }
                     let html = `
 <div class="card mb-3">
   <div class="row no-gutters">
@@ -54,7 +57,7 @@ $(document).ready(function () {
     <div class="col-md-8">
       <div class="card-body">
         <h5 class="card-title">${val._source.path.split(`/`).pop().split('.').slice(0, -1).join('.')}</h5>
-        <p class="card-text">[<strong>${val._source.meta.language.toUpperCase()}</strong>] ${val._source.path.split(`/`).slice(1).join(`/`)} <small class="text-muted">(indexed ${time_difference(val._source.timestamp)})</small></p>
+        <p class="card-text">[<strong>${lang}</strong>] ${val._source.path.split(`/`).slice(1).join(`/`)} <small class="text-muted">(indexed ${time_difference(val._source.timestamp)})</small></p>
       </div>
     </div>
   </div>

@@ -1,3 +1,4 @@
+import logging
 import os
 from datetime import datetime
 
@@ -38,10 +39,18 @@ def reset_duplicates_index():
 
 
 def index_document(path):
-    file_name, extension = get_file_name_and_extension(path)
     file_hash = MD5.hash_file(path)
-
     if not document_exist(file_hash):
+        file_name, extension = get_file_name_and_extension(path)
+        try:
+            file_meta = get_tika_meta(path)
+        except:
+            file_meta = {}
+        try:
+            file_content = get_tika_content(path)
+        except:
+            file_content = ""
+
         doc = {
             'path': path,
             'name': file_name,
@@ -49,8 +58,8 @@ def index_document(path):
             'hash': file_hash,
             'size': os.stat(path).st_size,
             'timestamp': datetime.now(),
-            'meta': get_tika_meta(path),
-            'content': get_tika_content(path)
+            'meta': file_meta,
+            'content': file_content
         }
         ES.index(index=DOCUMENTS_INDEX, body=doc)
 
@@ -70,25 +79,26 @@ def get_similar_documents(file_hash):
     original_content = doc['_source']['content']
     original_name = doc['_source']['name']
     original_hash = doc['_source']['hash']
-    body = {
-        "query": {
-            "match": {
-                "content": {
-                    "query": original_content[0:4000]
+    if len(original_content) > 0:
+        body = {
+            "query": {
+                "match": {
+                    "content": {
+                        "query": " ".join(sorted(original_content.split()[:500]))
+                    }
                 }
-            }
-        },
-        "sort": [
-            "_score"
-        ]
-    }
-    match = ES.search(body=body, index=DOCUMENTS_INDEX)
+            },
+            "sort": [
+                "_score"
+            ]
+        }
+        match = ES.search(body=body, index=DOCUMENTS_INDEX)
 
-    score_max = match['hits']['max_score']
-    score_threshold = score_max - (score_max / 100 * 5)
-    results = {original_hash: original_name}
-    for r in match['hits']['hits']:
-        if r['_score'] > score_threshold:
-            results[r['_source']['hash']] = r['_source']['name']
-    if len(results) > 1:
-        ES.index(index=DUPLICATES_INDEX, body=results)
+        score_max = match['hits']['max_score']
+        score_threshold = score_max - (score_max / 100 * 5)
+        results = {original_hash: original_name}
+        for r in match['hits']['hits']:
+            if r['_score'] > score_threshold:
+                results[r['_source']['hash']] = r['_source']['name']
+        if len(results) > 1:
+            ES.index(index=DUPLICATES_INDEX, body=results)

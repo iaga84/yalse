@@ -1,12 +1,15 @@
 import json
+from string import digits
 
 import requests
+from unidecode import unidecode
 from yalse_core.common.constants import PUNCTUATION
 
 
 def get_tika_content(path):
-    r = requests.put("http://tika:9998/tika", data=open(path, 'rb')).content.decode('utf-8').lower()
-    no_pun = r.translate(str.maketrans(PUNCTUATION, ' ' * len(PUNCTUATION)))
+    r = unidecode(requests.put("http://tika:9998/tika", data=open(path, 'rb')).content.decode('utf-8')).lower()
+    no_digit = r.translate(str.maketrans('', '', digits))
+    no_pun = no_digit.translate(str.maketrans(PUNCTUATION, ' ' * len(PUNCTUATION)))
     return " ".join(sorted(set(no_pun.split())))
 
 
