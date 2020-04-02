@@ -6,7 +6,7 @@ from rq import Queue
 from yalse_core.common.constants import DOCUMENTS_DIR
 from yalse_core.elasticsearch.read import get_all_documents, index_stats, library_size, search_documents
 from yalse_core.elasticsearch.write import (get_similar_documents, index_document, initialize_indexes,
-                                            reset_documents_index, reset_duplicates_index,)
+                                            reset_documents_index, reset_duplicates_index, index_document_metadata, index_document_content)
 
 
 def scan_library():
@@ -23,13 +23,31 @@ def scan_library():
     return {'message': "scan in progress"}
 
 
+def scan_library_metadata():
+    q = Queue(connection=Redis('redis'))
+
+    for entry in get_all_documents():
+        q.enqueue(index_document_metadata, entry['_id'], entry['_source']['path'])
+
+    return {'message': 'scan in progress'}
+
+
+def scan_library_content():
+    q = Queue(connection=Redis('redis'))
+
+    for entry in get_all_documents():
+        q.enqueue(index_document_content, entry['_id'], entry['_source']['path'])
+
+    return {'message': 'scan in progress'}
+
+
 def find_duplicates():
     reset_duplicates_index()
 
     q = Queue(connection=Redis('redis'))
 
     for entry in get_all_documents():
-        q.enqueue(get_similar_documents, entry['hash'])
+        q.enqueue(get_similar_documents, entry['_source']['hash'])
 
     return {'message': 'scan in progress'}
 

@@ -41,7 +41,7 @@ $(document).ready(function () {
                 "query": this.value
             },
             dataType: "json",
-            url: "http://localhost:8000/documents/search",
+            url: "/api/documents/search",
             success: function (data) {
                 $('#search_result').empty();
                 $.each(data.hits.hits, function (key, val) {
@@ -70,7 +70,23 @@ $(document).ready(function () {
     });
     $('#index_documents').click(function () {
         $.ajax({
-            url: "http://localhost:8000/library/scan",
+            url: "/api/library/scan",
+            type: 'PUT',
+            success: function (data) {
+            }
+        });
+    });
+        $('#index_metadata').click(function () {
+        $.ajax({
+            url: "/api/library/metadata/scan",
+            type: 'PUT',
+            success: function (data) {
+            }
+        });
+    });
+            $('#index_content').click(function () {
+        $.ajax({
+            url: "/api/library/content/scan",
             type: 'PUT',
             success: function (data) {
             }
@@ -78,7 +94,7 @@ $(document).ready(function () {
     });
     $('#index_duplicates').click(function () {
         $.ajax({
-            url: "http://localhost:8000/documents/duplicates/scan",
+            url: "/api/documents/duplicates/scan",
             type: 'PUT',
             success: function (data) {
             }
@@ -86,7 +102,7 @@ $(document).ready(function () {
     });
     $('#delete_index').click(function () {
         $.ajax({
-            url: "http://localhost:8000/library/index",
+            url: "/api/library/index",
             type: 'DELETE',
             success: function (data) {
             }
@@ -100,7 +116,7 @@ $(document).ready(function () {
                     "query": this.value
                 },
                 dataType: "json",
-                url: "http://localhost:8000/library/stats",
+                url: "/api/library/stats",
                 success: function (data) {
                     $('#number_of_documents').html(data.indices.library.total.docs.count);
                     $('#number_of_duplicates').html(Math.round(data.indices.duplicates.total.docs.count / 2));
@@ -112,7 +128,7 @@ $(document).ready(function () {
                     "query": this.value
                 },
                 dataType: "json",
-                url: "http://localhost:8000/library/size",
+                url: "/api/library/size",
                 success: function (data) {
                     $('#library_size').html(byte_to_size(data.aggregations.library_size.value));
                 }
@@ -122,7 +138,7 @@ $(document).ready(function () {
                     "query": this.value
                 },
                 dataType: "json",
-                url: "http://localhost:8000/queue/stats",
+                url: "/api/queue/stats",
                 success: function (data) {
                     $.each(data.queues, function (key, val) {
                         if (val.name === 'default') {
@@ -140,7 +156,7 @@ $(document).ready(function () {
                     "query": this.value
                 },
                 dataType: "json",
-                url: "http://localhost:8000/queue/workers",
+                url: "/api/queue/workers",
                 success: function (data) {
                     $('#workers').html(data.workers.length);
                 }

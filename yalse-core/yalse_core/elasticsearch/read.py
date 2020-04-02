@@ -1,3 +1,4 @@
+import logging
 
 from yalse_core.common.constants import DOCUMENTS_INDEX, ES
 
@@ -31,18 +32,16 @@ def index_stats():
     return ES.indices.stats()
 
 
-def document_exist(file_hash):
+def document_exist(path):
     body = {
         "query": {
-            "term": {
-                "hash": {
-                    "value": file_hash,
-                    "boost": 1.0
-                }
+            "match": {
+                "path": path
             }
         }
     }
-    return ES.search(body=body, index=DOCUMENTS_INDEX)['hits']['total']['value'] > 0
+    r = ES.search(body=body, index=DOCUMENTS_INDEX)
+    return r['hits']['total']['value'] > 0
 
 
 def get_all_documents(pagesize=250, scroll_timeout="2m", **kwargs):
@@ -62,4 +61,4 @@ def get_all_documents(pagesize=250, scroll_timeout="2m", **kwargs):
         hits = result["hits"]["hits"]
         if not hits:
             break
-        yield from (hit['_source'] for hit in hits)
+        yield from (hit for hit in hits)
