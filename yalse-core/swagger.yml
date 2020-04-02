@@ -8,13 +8,29 @@ info:
     name: MIT License
   version: 0.1.0
 servers:
-  - url: http://localhost:9393
+  - url: http://localhost:8000/api
 paths:
   /library/scan:
     put:
       summary: WIP
       description: WIP
       operationId: yalse_core.api.scan_library
+      responses:
+        202:
+          description: request accepted
+  /library/metadata/scan:
+    put:
+      summary: WIP
+      description: WIP
+      operationId: yalse_core.api.scan_library_metadata
+      responses:
+        202:
+          description: request accepted
+  /library/content/scan:
+    put:
+      summary: WIP
+      description: WIP
+      operationId: yalse_core.api.scan_library_content
       responses:
         202:
           description: request accepted

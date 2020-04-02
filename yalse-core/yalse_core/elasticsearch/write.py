@@ -20,7 +20,8 @@ def initialize_indexes():
             "properties": {
                 "name": {"type": "text", "term_vector": "yes"},
                 "content": {"type": "text", "term_vector": "yes"},
-                "hash": {"type": "keyword"}
+                "hash": {"type": "keyword"},
+                "path": {"type": "keyword"}
             }
         }
     }
@@ -39,17 +40,9 @@ def reset_duplicates_index():
 
 
 def index_document(path):
-    file_hash = MD5.hash_file(path)
-    if not document_exist(file_hash):
+    if not document_exist(path):
+        file_hash = MD5.hash_file(path)
         file_name, extension = get_file_name_and_extension(path)
-        try:
-            file_meta = get_tika_meta(path)
-        except:
-            file_meta = {}
-        try:
-            file_content = get_tika_content(path)
-        except:
-            file_content = ""
 
         doc = {
             'path': path,
@@ -57,11 +50,25 @@ def index_document(path):
             'extension': extension,
             'hash': file_hash,
             'size': os.stat(path).st_size,
-            'timestamp': datetime.now(),
-            'meta': file_meta,
-            'content': file_content
+            'timestamp': datetime.now()
         }
         ES.index(index=DOCUMENTS_INDEX, body=doc)
+
+
+def index_document_metadata(id, path):
+    try:
+        file_meta = get_tika_meta(path)
+    except:
+        file_meta = {}
+    ES.update(index=DOCUMENTS_INDEX, id=id, body={"doc": {"meta": file_meta}})
+
+
+def index_document_content(id, path):
+    try:
+        file_content = get_tika_content(path)
+    except:
+        file_content = ""
+    ES.update(index=DOCUMENTS_INDEX, id=id, body={"doc": {"content": file_content}})
 
 
 def get_similar_documents(file_hash):
