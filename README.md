@@ -52,7 +52,7 @@ These instructions will get you a copy of the project up and running on your loc
 
 I use [SemVer](http://semver.org/) for versioning. 
 
-0.1.1 Pre-Alpha
+0.1.2 Pre-Alpha
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details
