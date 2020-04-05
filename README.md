@@ -26,14 +26,10 @@ These instructions will get you a copy of the project up and running on your loc
 
 
 ```
-[WIP]
+sysctl -w vm.max_map_count=262144
+docker-compose up --scale yalse-worker=2
 ```
 
-## Running the tests
-
-```
-[WIP]
-```
 
 ## Deployment
 
