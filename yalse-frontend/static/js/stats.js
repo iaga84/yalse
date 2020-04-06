@@ -34,7 +34,7 @@ $(document).ready(function () {
                 options: {
                     circumference: Math.PI,
                     rotation: -Math.PI,
-                    responsive: false,
+                    responsive: true,
                     legend: {position: 'right', align: 'start'}
                 }
             });
