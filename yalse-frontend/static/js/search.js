@@ -18,6 +18,7 @@ $(document).ready(function () {
                         lang = 'N/A'
                     }
                     $('#search_result').append(search_result_record({
+                        background: COLORS[val._source.extension],
                         extension: val._source.extension,
                         title: val._source.path.split(`/`).pop().split('.').slice(0, -1).join('.'),
                         language: lang,

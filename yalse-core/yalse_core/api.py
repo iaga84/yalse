@@ -4,7 +4,7 @@ import requests
 from redis import Redis
 from rq import Queue
 from yalse_core.common.constants import DOCUMENTS_DIR
-from yalse_core.elasticsearch.read import get_all_documents, index_stats, library_size, search_documents
+from yalse_core.elasticsearch.read import get_all_documents, index_stats, library_size, search_documents, get_stats_extensions, get_stats_extensions_size
 from yalse_core.elasticsearch.write import (get_similar_documents, index_document, initialize_indexes,
                                             reset_documents_index, reset_duplicates_index, index_document_metadata, index_document_content)
 
@@ -71,6 +71,13 @@ def get_workers_stats():
 def get_library_stats():
     return index_stats()
 
+
+def get_library_stats_extensions():
+    return get_stats_extensions()
+
+
+def get_library_stats_extensions_size():
+    return get_stats_extensions_size()
 
 def get_library_size():
     return library_size()

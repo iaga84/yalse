@@ -1,3 +1,18 @@
+const COLORS = {
+    epub: '#20b2aa',
+    html: '#4a16ff',
+    jpg: '#ff67b3',
+    mobi: '#ff44de',
+    pdf: '#ff523f',
+    png: '#9123ff',
+    pub: '#40b7ff',
+    rar: '#ffd716',
+    tmp: '#4e4e4e',
+    txt: '#0cb534',
+    zip: '#c8bc42',
+};
+
+
 function byte_to_size(bytes) {
     var sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
     if (bytes == 0) return '0 Byte';

@@ -62,3 +62,40 @@ def get_all_documents(pagesize=250, scroll_timeout="2m", **kwargs):
         if not hits:
             break
         yield from (hit for hit in hits)
+
+
+def get_stats_extensions():
+    body = {
+        "aggs": {
+            "extensions": {
+                "terms": {
+                    "field": "extension",
+                    "size": 1000
+                }
+            }
+        },
+        "size": 0
+    }
+    return ES.search(body=body, index=DOCUMENTS_INDEX)
+
+
+def get_stats_extensions_size():
+    body = {
+        "size": 0,
+        "aggs": {
+            "extensions": {
+                "terms": {
+                    "field": "extension",
+                    "size": 1000
+                },
+                "aggs": {
+                    "size": {
+                        "sum": {
+                            "field": "size"
+                        }
+                    }
+                }
+            }
+        }
+    }
+    return ES.search(body=body, index=DOCUMENTS_INDEX)

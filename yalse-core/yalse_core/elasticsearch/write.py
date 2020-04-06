@@ -21,7 +21,8 @@ def initialize_indexes():
                 "name": {"type": "text", "term_vector": "yes"},
                 "content": {"type": "text", "term_vector": "yes"},
                 "hash": {"type": "keyword"},
-                "path": {"type": "keyword"}
+                "path": {"type": "keyword"},
+                "extension": {"type": "keyword"}
             }
         }
     }
