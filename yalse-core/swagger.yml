@@ -91,7 +91,23 @@ paths:
     put:
       summary: WIP
       description: WIP
-      operationId: yalse_core.api.find_duplicates
+      operationId: yalse_core.api.find_actual_duplicates
+      responses:
+        202:
+          description: request accepted
+  /documents/duplicates:
+    delete:
+      summary: WIP
+      description: WIP
+      operationId: yalse_core.api.delete_actual_duplicates
+      responses:
+        202:
+          description: request accepted
+  /documents/missing:
+    delete:
+      summary: WIP
+      description: WIP
+      operationId: yalse_core.api.delete_missing_documents
       responses:
         202:
           description: request accepted

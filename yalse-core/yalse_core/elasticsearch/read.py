@@ -41,16 +41,49 @@ def document_exist(path):
         }
     }
     r = ES.search(body=body, index=DOCUMENTS_INDEX)
-    return r['hits']['total']['value'] > 0
+    exists = r['hits']['total']['value'] > 0
+
+    for doc in r['hits']['hits']:
+        ES.update(index=DOCUMENTS_INDEX, id=doc['_id'], body={"doc": {"exists": True}})
+
+    return exists
 
 
-def get_all_documents(pagesize=250, scroll_timeout="2m", **kwargs):
+def get_all_documents(pagesize=250, index=DOCUMENTS_INDEX, scroll_timeout="2m", **kwargs):
     is_first = True
     while True:
         if is_first:  # Initialize scroll
-            result = ES.search(index=DOCUMENTS_INDEX, scroll=scroll_timeout, **kwargs, body={
+            result = ES.search(index=index, scroll=scroll_timeout, **kwargs, body={
                 "size": pagesize
             })
+            is_first = False
+        else:
+            result = ES.scroll(body={
+                "scroll_id": scroll_id,
+                "scroll": scroll_timeout
+            })
+        scroll_id = result["_scroll_id"]
+        hits = result["hits"]["hits"]
+        if not hits:
+            break
+        yield from (hit for hit in hits)
+
+
+def get_all_missing_documents(index=DOCUMENTS_INDEX, scroll_timeout="2m", **kwargs):
+    is_first = True
+    body = {
+        "query": {
+            "term": {
+                "exists": {
+                    "value": False,
+                    "boost": 1.0
+                }
+            }
+        }
+    }
+    while True:
+        if is_first:
+            result = ES.search(index=index, scroll=scroll_timeout, **kwargs, body=body)
             is_first = False
         else:
             result = ES.scroll(body={

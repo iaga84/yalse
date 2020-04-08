@@ -52,7 +52,7 @@ $(document).ready(function () {
                 url: "/api/library/stats",
                 success: function (data) {
                     $('#number_of_documents').html(data.indices.library.total.docs.count);
-                    $('#number_of_duplicates').html(Math.round(data.indices.duplicates.total.docs.count / 2));
+                    $('#number_of_duplicates').html(Math.round(data.indices.duplicates.total.docs.count));
                     $('#index_size').html(byte_to_size(data.indices.library.total.store.size_in_bytes));
                 }
             });
