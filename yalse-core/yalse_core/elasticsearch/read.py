@@ -132,3 +132,7 @@ def get_stats_extensions_size():
         }
     }
     return ES.search(body=body, index=DOCUMENTS_INDEX)
+
+
+def get_document(id):
+    return ES.get(index=DOCUMENTS_INDEX, id=id)

@@ -2,12 +2,17 @@ import logging
 import os
 
 import requests
+from flask import send_file
 from redis import Redis
 from rq import Queue
 from yalse_core.common.constants import DOCUMENTS_DIR, DUPLICATES_INDEX
-from yalse_core.elasticsearch.read import get_all_documents, index_stats, library_size, search_documents, get_stats_extensions, get_stats_extensions_size, get_all_missing_documents
-from yalse_core.elasticsearch.write import (get_similar_documents, index_document, initialize_indexes,
-                                            reset_documents_index, reset_duplicates_index, index_document_metadata, index_document_content, get_actual_duplicates, reset_exists, remove_document_from_index)
+from yalse_core.elasticsearch.read import (get_all_documents, get_all_missing_documents, get_document,
+                                           get_stats_extensions, get_stats_extensions_size,
+                                           index_stats, library_size, search_documents,)
+from yalse_core.elasticsearch.write import (get_actual_duplicates, get_similar_documents, index_document,
+                                            index_document_content, index_document_metadata, initialize_indexes,
+                                            remove_document_from_index, reset_documents_index,
+                                            reset_duplicates_index, reset_exists,)
 
 
 def scan_library():
@@ -94,6 +99,10 @@ def reset_library():
 
 def search(query):
     return search_documents(query)
+
+
+def download(id):
+    return send_file(get_document(id)['_source']['path'], as_attachment=True)
 
 
 def get_queue_stats():

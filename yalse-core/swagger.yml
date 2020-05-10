@@ -74,6 +74,24 @@ paths:
       responses:
         204:
           description: index deleted
+  /document/download:
+    get:
+      summary: WIP
+      description: WIP
+      operationId: yalse_core.api.download
+      parameters:
+        - in: query
+          name: id
+          schema:
+            type: string
+      responses:
+        200:
+          description: A PDF file
+          content:
+            application/*:
+              schema:
+                type: string
+                format: binary
   /documents/search:
     get:
       summary: WIP

@@ -23,6 +23,7 @@ $(document).ready(function () {
                         title: val._source.path.split(`/`).pop().split('.').slice(0, -1).join('.'),
                         language: lang,
                         path: val._source.path.split(`/`).slice(1).join(`/`),
+                        id: val._id,
                         indexing_time: time_difference(val._source.timestamp)
                     }));
                 });
