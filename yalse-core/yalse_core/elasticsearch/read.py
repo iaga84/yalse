@@ -8,9 +8,11 @@ def search_documents(query):
         "query": {
             "multi_match": {
                 "query": query,
-                "fields": ["name^5", "content"]
+                "fields": ["name^5", "content", "path"]
             }
-        }
+        },
+        "size": 1000
+
     }
     return ES.search(body=body, index=DOCUMENTS_INDEX)
 

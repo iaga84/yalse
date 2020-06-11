@@ -105,19 +105,11 @@ paths:
       responses:
         200:
           description: successful operation
-  /documents/duplicates/scan:
-    put:
-      summary: WIP
-      description: WIP
-      operationId: yalse_core.api.find_actual_duplicates
-      responses:
-        202:
-          description: request accepted
   /documents/duplicates:
     delete:
       summary: WIP
       description: WIP
-      operationId: yalse_core.api.delete_actual_duplicates
+      operationId: yalse_core.api.delete_duplicate_files
       responses:
         202:
           description: request accepted

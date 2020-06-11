@@ -5,14 +5,14 @@ import requests
 from flask import send_file
 from redis import Redis
 from rq import Queue
-from yalse_core.common.constants import DOCUMENTS_DIR, DUPLICATES_INDEX
+from yalse_core.common.constants import DOCUMENTS_DIR
 from yalse_core.elasticsearch.read import (get_all_documents, get_all_missing_documents, get_document,
                                            get_stats_extensions, get_stats_extensions_size,
-                                           index_stats, library_size, search_documents,)
-from yalse_core.elasticsearch.write import (get_actual_duplicates, get_similar_documents, index_document,
-                                            index_document_content, index_document_metadata, initialize_indexes,
-                                            remove_document_from_index, reset_documents_index,
-                                            reset_duplicates_index, reset_exists,)
+                                           index_stats, library_size, search_documents, )
+from yalse_core.elasticsearch.write import (delete_document_copies, get_duplicate_files, get_similar_documents,
+                                            index_document, index_document_content, index_document_metadata,
+                                            initialize_indexes, remove_document_from_index,
+                                            reset_documents_index, reset_duplicates_index, reset_exists, )
 
 
 def scan_library():
@@ -47,30 +47,13 @@ def scan_library_content():
     return {'message': 'scan in progress'}
 
 
-def find_actual_duplicates():
-    reset_duplicates_index()
-    q = Queue(connection=Redis('redis'))
+def delete_duplicate_files():
+    result = []
+    hashes = get_duplicate_files()
+    for h in hashes:
+        result.append(delete_document_copies(h))
 
-    for entry in get_all_documents():
-        q.enqueue(get_actual_duplicates, entry['_source']['path'])
-
-    return {'message': 'scan in progress'}
-
-
-def delete_actual_duplicates():
-    files_to_delete = []
-    for entry in get_all_documents(index=DUPLICATES_INDEX):
-        files_to_delete += entry['_source']['duplicates'][1:]
-    for file in files_to_delete:
-        try:
-            os.remove(file)
-            remove_document_from_index(file)
-        except:
-            logging.error("Can't delete file {}".format(file))
-    return {
-        "action": "removed",
-        "files": files_to_delete
-    }
+    return {'deleted': result}
 
 
 def delete_missing_documents():

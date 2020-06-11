@@ -1,6 +1,7 @@
 import logging
 import os
 from datetime import datetime
+from pathlib import Path
 
 from yalse_core.common.constants import DOCUMENTS_INDEX, DUPLICATES_INDEX, ES, MD5
 from yalse_core.elasticsearch.read import document_exist, get_all_documents
@@ -43,7 +44,7 @@ def initialize_indexes():
         }
     }
     ES.indices.create(index=DOCUMENTS_INDEX, body=body_documents, ignore=400)
-    ES.indices.create(index=DUPLICATES_INDEX, ignore=400)
+    ES.indices.create(index=DUPLICATES_INDEX, body=body_duplicates, ignore=400)
 
 
 def reset_documents_index():
@@ -112,48 +113,55 @@ def index_document_content(id, path):
     ES.update(index=DOCUMENTS_INDEX, id=id, body={"doc": {"content": file_content}})
 
 
-def get_actual_duplicates(path):
+def get_duplicate_files():
     body = {
-        "query": {
-            "term": {
-                "path": {
-                    "value": path,
-                    "boost": 1.0
+        "size": 0,
+        "aggs": {
+            "duplicate_hashes": {
+                "terms": {
+                    "field": "hash",
+                    "size": 5000,
+                    "min_doc_count": 2
                 }
             }
         }
     }
-    doc = ES.search(body=body, index=DOCUMENTS_INDEX)['hits']['hits'][0]
-    original_hash = doc['_source']['hash']
+    hashes = ES.search(body=body, index=DOCUMENTS_INDEX)['aggregations']['duplicate_hashes']['buckets']
+    result = []
+    for h in hashes:
+        result.append(h['key'])
+
+    return result
+
+
+def delete_document_copies(hash):
     body = {
         "query": {
             "term": {
                 "hash": {
-                    "value": original_hash,
+                    "value": hash,
                     "boost": 1.0
                 }
             }
-        }
+        }, "sort": [
+            {"timestamp": {"order": "asc"}}
+        ]
     }
-    check_already_inserted = ES.search(body=body, index=DUPLICATES_INDEX)['hits']['hits']
-    if len(check_already_inserted) == 0:
-        body = {
-            "query": {
-                "term": {
-                    "hash": {
-                        "value": original_hash,
-                        "boost": 1.0
-                    }
-                }
-            }
-        }
-        matches = ES.search(body=body, index=DOCUMENTS_INDEX)['hits']['hits']
-        if len(matches) > 1:
-            results = {'hash': original_hash,
-                       'duplicates': []}
-            for record in matches:
-                results['duplicates'].append(record['_source']['path'])
-            ES.index(index=DUPLICATES_INDEX, body=results)
+    all_copies = ES.search(body=body, index=DOCUMENTS_INDEX)['hits']['hits']
+    for copy in all_copies:
+        assert Path(copy['_source']['path']).exists()
+    result = []
+    if len(all_copies) > 1:
+        for copy in all_copies[1:]:
+            path = copy['_source']['path']
+            try:
+                os.remove(path)
+                remove_document_from_index(path)
+                result.append(path)
+            except:
+                logging.error("Can't delete file {}".format(path))
+
+    return result
 
 
 def get_similar_documents(file_hash):

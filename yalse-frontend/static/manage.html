@@ -20,11 +20,6 @@
                     <span class="sr-only">Loading...</span>
                 </div>
             </div>
-            <div class="shadow p-3 mb-1 mr-1 bg-white rounded">Estimated duplicates: <span id="number_of_duplicates"/>
-                <div class="spinner-grow spinner-grow-sm text-info" role="status">
-                    <span class="sr-only">Loading...</span>
-                </div>
-            </div>
         </div>
         <div class="row">
             <div class="shadow p-3 mb-1 mr-1 bg-white rounded">Library size: <span id="library_size"/>
@@ -65,8 +60,8 @@
     <button type="button" class="btn btn-primary mt-4" id="index_content">
         Index Content
     </button>
-    <button type="button" class="btn btn-primary mt-4" id="index_duplicates">
-        Find Duplicates
+    <button type="button" class="btn btn-danger mt-4" id="delete_duplicate_files">
+        Delete duplicate files
     </button>
     <button type="button" class="btn btn-danger mt-4" data-toggle="modal" data-target="#exampleModal">
         Reset Index
