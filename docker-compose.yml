@@ -1,4 +1,4 @@
-version: '2.4'
+version: '3.7'
 services:
   redis:
     image: redis:latest
@@ -61,5 +61,7 @@ services:
   yalse-frontend:
     build:
       context: ./yalse-frontend
+    depends_on:
+      - yalse-core
     ports:
       - 8080:8080

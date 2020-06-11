@@ -42,6 +42,22 @@ paths:
       responses:
         200:
           description: successful operation
+  /library/stats/extensions:
+    get:
+      summary: WIP
+      description: WIP
+      operationId: yalse_core.api.get_library_stats_extensions
+      responses:
+        200:
+          description: successful operation
+  /library/stats/extensions/size:
+    get:
+      summary: WIP
+      description: WIP
+      operationId: yalse_core.api.get_library_stats_extensions_size
+      responses:
+        200:
+          description: successful operation
   /library/size:
     get:
       summary: WIP
@@ -58,6 +74,24 @@ paths:
       responses:
         204:
           description: index deleted
+  /document/download:
+    get:
+      summary: WIP
+      description: WIP
+      operationId: yalse_core.api.download
+      parameters:
+        - in: query
+          name: id
+          schema:
+            type: string
+      responses:
+        200:
+          description: A PDF file
+          content:
+            application/*:
+              schema:
+                type: string
+                format: binary
   /documents/search:
     get:
       summary: WIP
@@ -71,11 +105,19 @@ paths:
       responses:
         200:
           description: successful operation
-  /documents/duplicates/scan:
-    put:
+  /documents/duplicates:
+    delete:
       summary: WIP
       description: WIP
-      operationId: yalse_core.api.find_duplicates
+      operationId: yalse_core.api.delete_duplicate_files
+      responses:
+        202:
+          description: request accepted
+  /documents/missing:
+    delete:
+      summary: WIP
+      description: WIP
+      operationId: yalse_core.api.delete_missing_documents
       responses:
         202:
           description: request accepted

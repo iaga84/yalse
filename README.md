@@ -26,14 +26,10 @@ These instructions will get you a copy of the project up and running on your loc
 
 
 ```
-[WIP]
+sysctl -w vm.max_map_count=262144
+docker-compose up --scale yalse-worker=4 --build
 ```
 
-## Running the tests
-
-```
-[WIP]
-```
 
 ## Deployment
 
@@ -52,7 +48,7 @@ These instructions will get you a copy of the project up and running on your loc
 
 I use [SemVer](http://semver.org/) for versioning. 
 
-0.1.2 Pre-Alpha
+0.1.3 Pre-Alpha
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details

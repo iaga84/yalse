@@ -29,35 +29,3 @@
     font-size: 2em;
     color: aliceblue;
 }
-
-.file-format-epub {
-    background: lightseagreen;
-}
-
-.file-format-pdf {
-    background: coral;
-}
-
-.file-format-png {
-    background: crimson;
-}
-
-.file-format-txt {
-    background: darkmagenta;
-}
-
-.file-format-mobi {
-    background: darkkhaki;
-}
-
-.file-format-tmp {
-    background: gray;
-}
-
-.file-format-pub {
-    background: darkolivegreen;
-}
-
-.file-format-zip {
-    background: #f2a218;
-}
