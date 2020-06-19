@@ -1,4 +1,3 @@
-import logging
 import os
 
 import requests
@@ -13,6 +12,7 @@ from yalse_core.elasticsearch.write import (delete_document_copies, get_duplicat
                                             index_document, index_document_content, index_document_metadata,
                                             initialize_indexes, remove_document_from_index,
                                             reset_documents_index, reset_duplicates_index, reset_exists, )
+from yalse_core.persistence.records import create_file, get_all_files
 
 
 def scan_library():
@@ -110,3 +110,11 @@ def get_library_stats_extensions_size():
 
 def get_library_size():
     return library_size()
+
+
+def create_database():
+    create_file('aaaa1111')
+
+
+def get_database_records():
+    return get_all_files()
