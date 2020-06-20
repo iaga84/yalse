@@ -1,0 +1,131 @@
+openapi: 3.0.1
+info:
+  title: YALSE Core
+  description: 'Yet Another Local Search Engine'
+  contact:
+    email: iaga84@gmail.com
+  license:
+    name: MIT License
+  version: 0.1.0
+servers:
+  - url: http://localhost:8000/api
+paths:
+  /files/scan:
+    put:
+      tags:
+        - Public
+      summary: WIP
+      description: WIP
+      operationId: yalse_core.api.scan_library
+      responses:
+        202:
+          description: request accepted
+  /files/metadata/scan:
+    put:
+      tags:
+        - Private
+      summary: WIP
+      description: WIP
+      operationId: yalse_core.api.scan_library_metadata
+      responses:
+        202:
+          description: request accepted
+  /files/content/scan:
+    put:
+      tags:
+        - Private
+      summary: WIP
+      description: WIP
+      operationId: yalse_core.api.scan_library_content
+      responses:
+        202:
+          description: request accepted
+  /library/stats:
+    get:
+      tags:
+        - Public
+      summary: WIP
+      description: WIP
+      operationId: yalse_core.api.get_library_stats
+      responses:
+        200:
+          description: successful operation
+  /library/stats/extensions:
+    get:
+      tags:
+        - Private
+      summary: WIP
+      description: WIP
+      operationId: yalse_core.api.get_library_stats_extensions
+      responses:
+        200:
+          description: successful operation
+  /library/stats/extensions/size:
+    get:
+      tags:
+        - Private
+      summary: WIP
+      description: WIP
+      operationId: yalse_core.api.get_library_stats_extensions_size
+      responses:
+        200:
+          description: successful operation
+  /library:
+    delete:
+      tags:
+        - Private
+      summary: WIP
+      description: WIP
+      operationId: yalse_core.api.reset_library
+      responses:
+        204:
+          description: index deleted
+  /file:
+    get:
+      tags:
+        - Public
+      summary: WIP
+      description: WIP
+      operationId: yalse_core.api.download
+      parameters:
+        - in: query
+          name: id
+          schema:
+            type: string
+      responses:
+        200:
+          description: A PDF file
+          content:
+            application/*:
+              schema:
+                type: string
+                format: binary
+  /library/search:
+    get:
+      tags:
+        - Public
+      summary: WIP
+      description: WIP
+      operationId: yalse_core.api.search
+      parameters:
+        - in: query
+          name: query
+          schema:
+            type: string
+      responses:
+        200:
+          description: successful operation
+  /files/duplicates:
+    delete:
+      tags:
+        - Private
+      summary: WIP
+      description: WIP
+      operationId: yalse_core.api.delete_duplicate_files
+      responses:
+        202:
+          description: request accepted
+
+
+
+

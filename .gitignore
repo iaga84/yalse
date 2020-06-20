@@ -1,4 +1,6 @@
 documents/
 index/
+db/
+yalse-core/secret.ini
 __pycache__
 .idea/

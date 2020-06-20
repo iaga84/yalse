@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 
 import logging
-import connexion
-from sqlalchemy_utils import database_exists, create_database
 
+import connexion
+from sqlalchemy.exc import IntegrityError
+from sqlalchemy_utils import create_database, database_exists
 from yalse_core.database import db
 
 logging.basicConfig(level=logging.INFO)
@@ -24,10 +25,12 @@ def register_extensions(app):
 
 
 def setup_database(app):
+    print("Setting up database..")
     with app.app_context():
         if not database_exists(app.config['SQLALCHEMY_DATABASE_URI']):
             create_database(app.config['SQLALCHEMY_DATABASE_URI'])
             db.create_all()
+
 
 
 def after_request(response):

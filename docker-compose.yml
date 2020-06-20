@@ -51,6 +51,12 @@ services:
       - redis
       - elasticsearch
       - tika
+  db-admin:
+    image: adminer
+    ports:
+      - 8785:8080
+    depends_on:
+      - db
   yalse-core:
     restart: on-failure
     build:
