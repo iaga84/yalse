@@ -3,7 +3,7 @@ import os
 from datetime import datetime
 from pathlib import Path
 
-from yalse_core.common.constants import DOCUMENTS_INDEX, ES, MD5
+from yalse_core.common.constants import DOCUMENTS_INDEX, ES, SHA256
 from yalse_core.elasticsearch.read import document_exist, get_all_documents
 from yalse_core.filesystem.files import get_file_name_and_extension
 from yalse_core.tika.extractor import get_tika_content, get_tika_meta
@@ -53,7 +53,7 @@ def reset_documents_index():
 
 def index_document(path):
     if not document_exist(path):
-        file_hash = MD5.hash_file(path)
+        file_hash = SHA256.hash_file(path)
         file_name, extension = get_file_name_and_extension(path)
 
         doc = {

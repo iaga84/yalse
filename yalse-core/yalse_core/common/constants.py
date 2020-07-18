@@ -6,4 +6,4 @@ DOCUMENTS_DIR = '/documents'
 DOCUMENTS_INDEX = 'library'
 
 ES = Elasticsearch(['elasticsearch:9200'])
-MD5 = FileHash('md5')
+SHA256 = FileHash('sha256')
