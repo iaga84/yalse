@@ -50,7 +50,7 @@ docker-compose up --scale yalse-worker=4 --build
 
 I use [SemVer](http://semver.org/) for versioning. 
 
-0.1.3 Pre-Alpha
+0.2.0 Pre-Alpha
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details
