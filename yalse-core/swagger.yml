@@ -10,130 +10,83 @@ info:
 servers:
   - url: http://localhost:8000/api
 paths:
-  /library/scan:
-    put:
+  /files/scan:
+    post:
+      tags:
+        - Public
       summary: WIP
       description: WIP
-      operationId: yalse_core.api.scan_library
+      operationId: yalse_core.api.public_files_scan_post
+      requestBody:
+        description: Optional description in *Markdown*
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                dry_run:
+                  type: string
       responses:
         202:
           description: request accepted
-  /library/metadata/scan:
-    put:
+  /library:
+    delete:
+      tags:
+        - Private
       summary: WIP
       description: WIP
-      operationId: yalse_core.api.scan_library_metadata
+      operationId: yalse_core.api.private_library_delete
       responses:
-        202:
-          description: request accepted
-  /library/content/scan:
-    put:
+        200:
+          description: Library reset complete
+  /library/search:
+    post:
+      tags:
+        - Public
       summary: WIP
       description: WIP
-      operationId: yalse_core.api.scan_library_content
+      operationId: yalse_core.api.public_library_search_post
+      requestBody:
+        description: Optional description in *Markdown*
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                q:
+                  type: string
       responses:
-        202:
+        200:
           description: request accepted
   /library/stats:
     get:
+      tags:
+        - Public
       summary: WIP
       description: WIP
-      operationId: yalse_core.api.get_library_stats
+      operationId: yalse_core.api.public_library_stats_get
       responses:
-        200:
-          description: successful operation
-  /library/stats/extensions:
+        202:
+          description: request accepted
+  /file:
     get:
+      tags:
+        - Public
       summary: WIP
       description: WIP
-      operationId: yalse_core.api.get_library_stats_extensions
-      responses:
-        200:
-          description: successful operation
-  /library/stats/extensions/size:
-    get:
-      summary: WIP
-      description: WIP
-      operationId: yalse_core.api.get_library_stats_extensions_size
-      responses:
-        200:
-          description: successful operation
-  /library/size:
-    get:
-      summary: WIP
-      description: WIP
-      operationId: yalse_core.api.get_library_size
-      responses:
-        200:
-          description: successful operation
-  /library/index:
-    delete:
-      summary: WIP
-      description: WIP
-      operationId: yalse_core.api.reset_library
-      responses:
-        204:
-          description: index deleted
-  /document/download:
-    get:
-      summary: WIP
-      description: WIP
-      operationId: yalse_core.api.download
+      operationId: yalse_core.api.public_file_get
       parameters:
         - in: query
-          name: id
+          name: file_hash
           schema:
             type: string
       responses:
         200:
-          description: A PDF file
+          description: WIP
           content:
             application/*:
               schema:
                 type: string
                 format: binary
-  /documents/search:
-    get:
-      summary: WIP
-      description: WIP
-      operationId: yalse_core.api.search
-      parameters:
-        - in: query
-          name: query
-          schema:
-            type: string
-      responses:
-        200:
-          description: successful operation
-  /documents/duplicates:
-    delete:
-      summary: WIP
-      description: WIP
-      operationId: yalse_core.api.delete_duplicate_files
-      responses:
-        202:
-          description: request accepted
-  /documents/missing:
-    delete:
-      summary: WIP
-      description: WIP
-      operationId: yalse_core.api.delete_missing_documents
-      responses:
-        202:
-          description: request accepted
-  /queue/stats:
-    get:
-      summary: WIP
-      description: WIP
-      operationId: yalse_core.api.get_queue_stats
-      responses:
-        200:
-          description: successful operation
-  /queue/workers:
-    get:
-      summary: WIP
-      description: WIP
-      operationId: yalse_core.api.get_workers_stats
-      responses:
-        200:
-          description: successful operation

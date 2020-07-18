@@ -3,9 +3,9 @@ import os
 from datetime import datetime
 from pathlib import Path
 
-from yalse_core.common.constants import DOCUMENTS_INDEX, DUPLICATES_INDEX, ES, MD5
+from yalse_core.common.constants import DOCUMENTS_INDEX, ES, SHA256
 from yalse_core.elasticsearch.read import document_exist, get_all_documents
-from yalse_core.system.files import get_file_name_and_extension
+from yalse_core.filesystem.files import get_file_name_and_extension
 from yalse_core.tika.extractor import get_tika_content, get_tika_meta
 
 
@@ -44,7 +44,6 @@ def initialize_indexes():
         }
     }
     ES.indices.create(index=DOCUMENTS_INDEX, body=body_documents, ignore=400)
-    ES.indices.create(index=DUPLICATES_INDEX, body=body_duplicates, ignore=400)
 
 
 def reset_documents_index():
@@ -52,14 +51,9 @@ def reset_documents_index():
     initialize_indexes()
 
 
-def reset_duplicates_index():
-    ES.indices.delete(index=DUPLICATES_INDEX, ignore=404)
-    initialize_indexes()
-
-
 def index_document(path):
     if not document_exist(path):
-        file_hash = MD5.hash_file(path)
+        file_hash = SHA256.hash_file(path)
         file_name, extension = get_file_name_and_extension(path)
 
         doc = {

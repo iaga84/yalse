@@ -41,6 +41,8 @@ docker-compose up --scale yalse-worker=4 --build
 
 * [Connexion](https://github.com/zalando/connexion) - API First backend framework (Flask-based)
 * [Elasticsearch](https://www.elastic.co/) - Search engine
+* [SQLAlchemy](https://www.sqlalchemy.org/) - Persistence layer
+* [PostgreSQL](https://www.postgresql.org/) - Database
 * [RQ](https://python-rq.org/) - Library for queueing jobs
 * [Tika](https://tika.apache.org/) - File content and metadata extractor
 
@@ -48,7 +50,7 @@ docker-compose up --scale yalse-worker=4 --build
 
 I use [SemVer](http://semver.org/) for versioning. 
 
-0.1.3 Pre-Alpha
+0.2.0 Pre-Alpha
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details
