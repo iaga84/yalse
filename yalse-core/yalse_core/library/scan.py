@@ -136,7 +136,6 @@ def files_scan(dry_run):
                         file.anomaly = False
                 if count % 1000 == 0:
                     logging.info(f"Scanned {count} files so far.")
-                    print(f"[print] Scanned {count} files so far.")
 
         db.session.commit()
 

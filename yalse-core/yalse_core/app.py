@@ -14,6 +14,7 @@ def create_app():
     app = connexion.App(__name__)
     app.add_api('../swagger.yml')
 
+    app.app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     app.app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://docker:docker@db:5432/yalse'
     app.app.after_request(after_request)
 
