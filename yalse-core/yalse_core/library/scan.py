@@ -104,15 +104,25 @@ def files_scan(dry_run):
             if not Path(file.file_path).exists():
                 file.missing = True
         files = []
-        logging.info("Starting OS scan..")
+        count = 0
+        logging.info("Starting filesystem scan..")
         for r, d, f in os.walk(DOCUMENTS_DIR):
             for file in f:
-                file_path = os.path.join(r, file)
-                file_hash = SHA256.hash_file(file_path)
-                files.append((file_path, file_hash))
-        logging.info(f"Completed OS scan: {len(files)} files found.")
+                count += 1
+                files.append(os.path.join(r, file))
+                if count % 1000 == 0:
+                    logging.info(f"Scanned {count} files so far.")
+        logging.info(f"Completed filesystem scan: {len(files)} files found.")
         count = 0
-        for file_path, file_hash in files:
+        files_and_hashes = []
+        logging.info("Starting hashing..")
+        for file in files:
+            count += 1
+            files_and_hashes.append((file, SHA256.hash_file(file)))
+            if count % 1000 == 0:
+                logging.info(f"Hashed {count} files so far.")
+        logging.info(f"Completed hashing.")
+        for file_path, file_hash in files_and_hashes:
             count += 1
             path_exists = db.session.query(File.id).filter_by(file_path=file_path).scalar() is not None
             hash_exists = db.session.query(File.id).filter(
@@ -140,7 +150,7 @@ def files_scan(dry_run):
                 else:
                     file.anomaly = False
             if count % 1000 == 0:
-                logging.info(f"Scanned {count} files out of {len(files)} so far.")
+                logging.info(f"Processed {count} files out of {len(files)} so far.")
 
         db.session.commit()
 
