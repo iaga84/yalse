@@ -103,8 +103,10 @@ def files_scan(dry_run):
         for file in db.session.query(File).all():
             if not Path(file.file_path).exists():
                 file.missing = True
+        count = 0
         for r, d, f in os.walk(DOCUMENTS_DIR):
             for file in f:
+                count += 1
                 file_path = os.path.join(r, file)
                 file_hash = SHA256.hash_file(file_path)
                 path_exists = db.session.query(File.id).filter_by(file_path=file_path).scalar() is not None
@@ -132,6 +134,9 @@ def files_scan(dry_run):
                         file.file_hash = file_hash
                     else:
                         file.anomaly = False
+                if count % 1000 == 0:
+                    logging.info(f"Scanned {count} files so far.")
+                    print(f"[print] Scanned {count} files so far.")
 
         db.session.commit()
 
@@ -145,5 +150,5 @@ def files_scan(dry_run):
 def scan_files(body):
     dry_run = body.get('dry_run') is not None
     queue = Queue(connection=Redis('redis'))
-    queue.enqueue(files_scan, dry_run, job_timeout=10000)
+    queue.enqueue(files_scan, dry_run, job_timeout='24h')
     return {'code': 202, 'message': "scan in progress"}, 202
