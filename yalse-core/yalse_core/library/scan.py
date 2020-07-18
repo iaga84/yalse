@@ -103,39 +103,44 @@ def files_scan(dry_run):
         for file in db.session.query(File).all():
             if not Path(file.file_path).exists():
                 file.missing = True
-        count = 0
+        files = []
+        logging.info("Starting OS scan..")
         for r, d, f in os.walk(DOCUMENTS_DIR):
             for file in f:
-                count += 1
                 file_path = os.path.join(r, file)
                 file_hash = SHA256.hash_file(file_path)
-                path_exists = db.session.query(File.id).filter_by(file_path=file_path).scalar() is not None
-                hash_exists = db.session.query(File.id).filter(
-                    File.file_path != file_path,
-                    File.file_hash == file_hash,
-                    File.duplicate == False,
-                    File.missing == False,
-                    File.anomaly == False
-                ).count() > 0
+                files.append((file_path, file_hash))
+        logging.info(f"Completed OS scan: {len(files)} files found.")
+        count = 0
+        for file_path, file_hash in files:
+            count += 1
+            path_exists = db.session.query(File.id).filter_by(file_path=file_path).scalar() is not None
+            hash_exists = db.session.query(File.id).filter(
+                File.file_path != file_path,
+                File.file_hash == file_hash,
+                File.duplicate == False,
+                File.missing == False,
+                File.anomaly == False
+            ).count() > 0
 
-                if not path_exists:
-                    record = File(
-                        file_hash=file_hash,
-                        file_path=file_path,
-                        duplicate=hash_exists,
-                    )
-                    db.session.add(record)
+            if not path_exists:
+                record = File(
+                    file_hash=file_hash,
+                    file_path=file_path,
+                    duplicate=hash_exists,
+                )
+                db.session.add(record)
+            else:
+                file = db.session.query(File).filter_by(file_path=file_path).first()
+                file.missing = False
+                file.duplicate = hash_exists
+                if file_hash != file.file_hash:
+                    file.anomaly = True
+                    file.file_hash = file_hash
                 else:
-                    file = db.session.query(File).filter_by(file_path=file_path).first()
-                    file.missing = False
-                    file.duplicate = hash_exists
-                    if file_hash != file.file_hash:
-                        file.anomaly = True
-                        file.file_hash = file_hash
-                    else:
-                        file.anomaly = False
-                if count % 1000 == 0:
-                    logging.info(f"Scanned {count} files so far.")
+                    file.anomaly = False
+            if count % 1000 == 0:
+                logging.info(f"Scanned {count} files out of {len(files)} so far.")
 
         db.session.commit()
 

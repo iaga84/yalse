@@ -3,7 +3,6 @@
 import logging
 
 import connexion
-from sqlalchemy.exc import IntegrityError
 from sqlalchemy_utils import create_database, database_exists
 from yalse_core.database import db
 
