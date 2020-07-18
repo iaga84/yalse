@@ -4,7 +4,7 @@ from pathlib import Path
 
 from redis import Redis
 from rq import Queue
-from yalse_core.common.constants import DOCUMENTS_DIR, SHA256
+from yalse_core.common.constants import DOCUMENTS_DIR, MD5
 from yalse_core.common.email import send_email
 from yalse_core.database import db, File
 from yalse_core.elasticsearch.index import index_document
@@ -118,7 +118,7 @@ def files_scan(dry_run):
         logging.info("Starting hashing..")
         for file in files:
             count += 1
-            files_and_hashes.append((file, SHA256.hash_file(file)))
+            files_and_hashes.append((file, MD5.hash_file(file)))
             if count % 1000 == 0:
                 logging.info(f"Hashed {count} files so far.")
         logging.info(f"Completed hashing.")
